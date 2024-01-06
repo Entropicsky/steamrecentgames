@@ -50,6 +50,10 @@ For example: ["76561199071987314", "76561199072012698", "76561199072123582", "76
 
 - `total_steamids`: The maximum number of Steam IDs to process.
 
+- `time_to_sleep`: The time to sleep between requests to prevent rate limiting (in seconds)
+
+
+
 ## License
 
 This project is licensed under the MIT License.

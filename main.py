@@ -25,7 +25,8 @@ steamkey = os.getenv('STEAMKEY')
 #recently_played_file = 'paladins_recently_played.csv' # This is the file that contains the recently played games for the steamids   
 to_process_file = 'steamids_to_process.json' # This is the file that contains the steamids to process
 processed_file = 'processed_steamids.json' # This is the file that contains the steamids that have been processed
-recently_played_file = 'steam_data.csv' # This is the file that contains the recently played games for the steamids   
+recently_played_file = 'steam_data.csv' # This is the file that contains the recently played games for the steamids
+time_to_sleep = 0.125 # This is the time to sleep between requests to prevent rate limiting   
 
 # Set getfriends to True to get friends and add them to the to_process list. This will allow you to use a "Kevin Bacon" approach to get more SteamIds to process.
 getfriends = False
@@ -105,7 +106,7 @@ def gather_info(steamkey, total_steamids, getfriends=False):
                 print(f"Error processing {current_steamid}: {e}")
             write_to_file(processed_file, list(processed_steamids))
             write_to_file(to_process_file, steamids_to_process)
-        time.sleep(0.125)  # To prevent rate limiting
+        time.sleep(time_to_sleep)  # To prevent rate limiting
     print(f"Processed {steamids_processed} steamids.")
 
     
