@@ -29,7 +29,7 @@ recently_played_file = 'steam_data.csv' # This is the file that contains the rec
 time_to_sleep = 0.125 # This is the time to sleep between requests to prevent rate limiting   
 
 # Set getfriends to True to get friends and add them to the to_process list. This will allow you to use a "Kevin Bacon" approach to get more SteamIds to process.
-getfriends = False
+getfriends = True
 
 # Set the maximum number of steamids to find recently played data for. 
 total_steamids = 100000
@@ -48,13 +48,20 @@ def get_recently_played_games(steamkey, steamid, retries=3):
     raise Exception("Failed to get response or decode JSON after multiple attempts")
 
 
-def get_friends(steamkey, steamid):
+def get_friends(steamkey, steamid, retries=3):
     url = f"https://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key={steamkey}&steamid={steamid}&relationship=friend"
-    response = requests.get(url)
-    friends_data = response.json()
-    num_friends = len(friends_data.get('friendslist', {}).get('friends', []))
-    print(f"{num_friends} friends found for SteamId {steamid}")
-    return friends_data
+    for i in range(retries):
+        try:
+            response = requests.get(url, timeout=5)  # Set timeout to 5 seconds
+            friends_data = response.json()
+            num_friends = len(friends_data.get('friendslist', {}).get('friends', []))
+            print(f"{num_friends} friends found for SteamId {steamid}")
+            return friends_data
+        except (requests.exceptions.Timeout, JSONDecodeError):
+            delay = 2  # Wait for 2 seconds
+            print(f"Request timed out or failed to decode JSON, retrying in {delay} seconds...")
+            time.sleep(delay)
+    raise Exception("Failed to get response or decode JSON after multiple attempts")
 
 def write_to_file(filename, data):
     with tempfile.NamedTemporaryFile('w', delete=False) as tmp:
